@@ -18,7 +18,7 @@ Grok Build  --POST /api/handoff-->  Grok Link  --browser-->  SuperGrok
 ## Quick start
 
 ```powershell
-git clone https://github.com/SqibNation/grok-link.git
+git clone https://github.com/memento-mori1984/grok-link.git
 cd grok-link
 npm install
 npm run tauri dev

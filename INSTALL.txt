@@ -65,4 +65,4 @@ Uninstall
 Support
 -------
 - README.md and docs\GROK-BUILD-INTEGRATION.md in the release or repository
-- https://github.com/SqibNation/grok-link/releases
+- https://github.com/memento-mori1984/grok-link/releases
