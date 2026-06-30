@@ -74,6 +74,46 @@ function updateHeroState(mode, title, subtitle) {
   if (subEl) subEl.textContent = subtitle;
 }
 
+function updateBridgeHero(items = []) {
+  if (!bridgeOk) return;
+
+  const pending = items.filter((h) => h.status === "pending").length;
+  const setupDone = isSetupComplete();
+
+  if (!setupDone) {
+    if (pending > 0) {
+      updateHeroState(
+        "active",
+        `${pending} new question${pending === 1 ? "" : "s"}`,
+        "Complete setup above so SuperGrok replies sync back automatically."
+      );
+    } else {
+      updateHeroState(
+        "ready",
+        "Grok Link is running",
+        "Complete the setup guide so replies sync back automatically."
+      );
+    }
+    return;
+  }
+
+  if (pending > 0) {
+    updateHeroState(
+      "active",
+      `${pending} new question${pending === 1 ? "" : "s"}`,
+      "Click one below, then press Open SuperGrok."
+    );
+  } else if (!items.length) {
+    updateHeroState(
+      "ready",
+      "Ready and waiting",
+      "Grok Link is running. New questions from Grok Build will show up here."
+    );
+  } else {
+    updateHeroState("ready", "All caught up", "Latest answers are saved for Grok Build.");
+  }
+}
+
 function renderGuideUI() {
   const complete = isSetupComplete();
   const { done, total } = setupProgress();
@@ -141,13 +181,7 @@ function renderGuideUI() {
     });
   }
 
-  if (complete) {
-    updateHeroState(
-      "ready",
-      "Setup complete",
-      "Grok Link is ready. When Grok Build sends a question, it will appear below."
-    );
-  }
+  // Hero text is driven by updateBridgeHero() after queue refresh.
 }
 
 function showFullGuide() {
@@ -261,26 +295,12 @@ function renderHandoffQueue(items) {
     root.innerHTML = isSetupComplete()
       ? '<p class="empty-note">No messages yet. When Grok Build needs SuperGrok, a question will appear here.</p>'
       : '<p class="empty-note">No messages yet. Finish setup above first, then Grok Build can send questions here.</p>';
-    if (!isSetupComplete()) {
-      updateHeroState("ready", "Finish setup first", "Complete the guide above so replies sync back automatically.");
-    } else {
-      updateHeroState("ready", "Ready and waiting", "Grok Link is running. New questions from Grok Build will show up here.");
-    }
+    updateBridgeHero(items);
     renderGuideUI();
     return;
   }
 
-  const pending = items.filter((h) => h.status === "pending").length;
-
-  if (pending > 0) {
-    updateHeroState(
-      "active",
-      `${pending} new question${pending === 1 ? "" : "s"}`,
-      "Click one below, then press Open SuperGrok."
-    );
-  } else if (isSetupComplete()) {
-    updateHeroState("ready", "All caught up", "Latest answers are saved for Grok Build.");
-  }
+  updateBridgeHero(items);
 
   root.innerHTML = "";
   items.forEach((item) => {
@@ -450,23 +470,6 @@ async function submitResponse() {
 
 async function hideToTray() {
   try {
-    const getCurrent =
-      window.__TAURI__?.webviewWindow?.getCurrentWebviewWindow ??
-      window.__TAURI__?.window?.getCurrentWindow;
-    if (typeof getCurrent === "function") {
-      const win = getCurrent();
-      if (win?.hide) {
-        if (win.setSkipTaskbar) {
-          await win.setSkipTaskbar(true);
-        }
-        await win.hide();
-        showToast(
-          "Hidden to tray. Click the Grok Link icon near the clock to reopen.",
-          "info"
-        );
-        return;
-      }
-    }
     await tauriInvoke("hide_to_tray");
     showToast(
       "Hidden to tray. Click the Grok Link icon near the clock to reopen.",
@@ -500,7 +503,7 @@ async function initMeta() {
     appVersion = await tauriInvoke("app_version");
     document.getElementById("version-badge").textContent = `v${appVersion}`;
   } catch {
-    document.getElementById("version-badge").textContent = "v0.5.4";
+    document.getElementById("version-badge").textContent = "v0.5.5";
   }
   try {
     const port = await tauriInvoke("bridge_port");

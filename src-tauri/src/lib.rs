@@ -152,7 +152,10 @@ fn data_dir_path() -> String {
 }
 
 #[tauri::command]
-fn hide_to_tray(window: tauri::WebviewWindow) -> Result<(), String> {
+fn hide_to_tray(app: AppHandle) -> Result<(), String> {
+    let window = app
+        .get_webview_window("main")
+        .ok_or("main window not found")?;
     hide_main_to_tray(&window)
 }
 
