@@ -13,13 +13,13 @@ Requirements
 Quick install (recommended)
 ---------------------------
 1. Verify the SHA-256 checksum (optional but recommended):
-     Get-FileHash -Algorithm SHA256 "Grok Link 0.5.2.exe"
-   Compare with Grok Link 0.5.2.exe.sha256
+     Get-FileHash -Algorithm SHA256 "Grok Link 0.5.7.exe"
+   Compare with Grok Link 0.5.7.exe.sha256
 
 2. Run the installer:
-     Grok Link_0.5.2_x64-setup.exe
+     Grok Link_0.5.7_x64-setup.exe
    Or use the portable exe directly:
-     "Grok Link 0.5.2.exe"
+     "Grok Link 0.5.7.exe"
 
 3. Launch Grok Link:
    - Desktop shortcut "Grok Link", or
@@ -27,12 +27,12 @@ Quick install (recommended)
 
 4. First-time setup (in the app):
    - Read "What Grok Link does" at the top of the window
-   - Follow the 4-step setup guide (Tampermonkey + helper script)
+   - Follow the 4-step setup guide (Tampermonkey + one-click browser bridge install)
    - Click "Finish setup" when done
 
 System tray
 -----------
-- Closing the Grok Link window hides it to the system tray; the bridge keeps running.
+- Closing the window or clicking minimize hides Grok Link to the system tray; the bridge keeps running.
 - Left-click the tray icon to restore the window.
 - Right-click the tray icon for Show Grok Link or Quit.
 - Only one Grok Link instance runs at a time; launching again focuses the existing one.
@@ -40,7 +40,7 @@ System tray
 
 Verify it works
 ---------------
-- Grok Link shows "Setup complete" or "Ready and waiting"
+- Grok Link shows "Grok Link is running" or "Ready and waiting"
 - In PowerShell:
     Invoke-RestMethod http://127.0.0.1:3877/api/health
 
