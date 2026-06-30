@@ -1,6 +1,6 @@
 [package]
 name = "grok-link"
-version = "0.3.0"
+version = "0.4.0"
 description = "Grok Link - bridge between Grok Build and SuperGrok"
 authors = ["Zachary H. Roberts"]
 edition = "2021"
@@ -18,8 +18,9 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["tray-icon"] }
 tauri-plugin-opener = "2"
+tauri-plugin-single-instance = "2"
 arboard = "3"
 dirs = "6"
 tiny_http = "0.12"

@@ -13,13 +13,13 @@ Requirements
 Quick install (recommended)
 ---------------------------
 1. Verify the SHA-256 checksum (optional but recommended):
-     Get-FileHash -Algorithm SHA256 "Grok Link 0.3.0.exe"
-   Compare with Grok Link 0.3.0.exe.sha256
+     Get-FileHash -Algorithm SHA256 "Grok Link 0.4.0.exe"
+   Compare with Grok Link 0.4.0.exe.sha256
 
 2. Run the installer:
-     Grok Link_0.3.0_x64-setup.exe
+     Grok Link_0.4.0_x64-setup.exe
    Or use the portable exe directly:
-     "Grok Link 0.3.0.exe"
+     "Grok Link 0.4.0.exe"
 
 3. Launch Grok Link:
    - Desktop shortcut "Grok Link", or
@@ -29,6 +29,13 @@ Quick install (recommended)
    - In Grok Link, click "Install browser bridge"
    - Paste the userscript into Tampermonkey (tampermonkey.net)
    - Enable the script on grok.com
+
+System tray (v0.4+)
+-------------------
+- Closing the Grok Link window hides it to the system tray; the bridge keeps running.
+- Left-click the tray icon to restore the window.
+- Right-click the tray icon for Show Grok Link or Quit.
+- Only one Grok Link instance runs at a time; launching again focuses the existing one.
 
 Verify it works
 ---------------

@@ -2,6 +2,14 @@
 
 All notable changes to Grok Link are documented here.
 
+## [0.4.0] - 2026-06-30
+
+### Added
+- System tray icon: closing the window hides to tray; bridge keeps running
+- Tray menu: Show Grok Link, Quit
+- Left-click tray icon to restore the window
+- Single-instance lock: only one Grok Link process; relaunch focuses existing window
+
 ## [0.3.0] - 2026-06-30
 
 ### Added

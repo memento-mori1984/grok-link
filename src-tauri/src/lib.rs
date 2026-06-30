@@ -5,7 +5,11 @@ use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
 use std::sync::Arc;
-use tauri::{AppHandle, Emitter, Manager};
+use tauri::{
+    menu::{Menu, MenuItem},
+    tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
+    AppHandle, Emitter, Manager, WindowEvent,
+};
 use tauri_plugin_opener::OpenerExt;
 
 const BROWSER_BRIDGE_SCRIPT: &str = include_str!("../../browser/grok-link-bridge.user.js");
@@ -25,6 +29,49 @@ fn ensure_browser_bridge_script() -> Result<PathBuf, String> {
         fs::write(&path, BROWSER_BRIDGE_SCRIPT).map_err(|e| e.to_string())?;
     }
     Ok(path)
+}
+
+fn show_main_window(app: &AppHandle) {
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.unminimize();
+        let _ = window.show();
+        let _ = window.set_focus();
+    }
+}
+
+fn setup_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
+    let show_i = MenuItem::with_id(app, "show", "Show Grok Link", true, None::<&str>)?;
+    let quit_i = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+    let menu = Menu::with_items(app, &[&show_i, &quit_i])?;
+
+    let icon = app
+        .default_window_icon()
+        .ok_or("missing default window icon")?
+        .clone();
+
+    let _tray = TrayIconBuilder::new()
+        .icon(icon)
+        .tooltip(&format!("Grok Link — bridge on port {BRIDGE_PORT}"))
+        .menu(&menu)
+        .show_menu_on_left_click(false)
+        .on_menu_event(|app, event| match event.id.as_ref() {
+            "show" => show_main_window(app),
+            "quit" => app.exit(0),
+            _ => {}
+        })
+        .on_tray_icon_event(|tray, event| {
+            if let TrayIconEvent::Click {
+                button: MouseButton::Left,
+                button_state: MouseButtonState::Up,
+                ..
+            } = event
+            {
+                show_main_window(tray.app_handle());
+            }
+        })
+        .build(app)?;
+
+    Ok(())
 }
 
 #[tauri::command]
@@ -102,7 +149,16 @@ fn install_browser_bridge(app: AppHandle) -> Result<String, String> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let mut builder = tauri::Builder::default();
+
+    #[cfg(desktop)]
+    {
+        builder = builder.plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            show_main_window(app);
+        }));
+    }
+
+    builder
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             let data_dir = bridge::bridge_data_dir();
@@ -110,7 +166,17 @@ pub fn run() {
             let bridge = Arc::new(BridgeState::new(data_dir));
             app.manage(bridge.clone());
             start_bridge_server(app.handle().clone(), bridge);
+
+            #[cfg(desktop)]
+            setup_tray(app.handle())?;
+
             Ok(())
+        })
+        .on_window_event(|window, event| {
+            if let WindowEvent::CloseRequested { api, .. } = event {
+                let _ = window.hide();
+                api.prevent_close();
+            }
         })
         .invoke_handler(tauri::generate_handler![
             open_in_browser,
