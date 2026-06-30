@@ -1,45 +1,46 @@
 Grok Link - Windows Install Guide
 =================================
 
-Grok Link bridges Grok Build (IDE agent) and SuperGrok (browser).
+Grok Link connects Grok Build (your IDE coding AI) and SuperGrok (Grok in the browser).
 
 Requirements
 ------------
 - Windows 10 or later (64-bit)
 - Microsoft Edge WebView2 (usually preinstalled on Windows 11)
 - A modern browser for SuperGrok (Edge, Chrome, Firefox)
-- Optional: Tampermonkey extension for automatic reply sync
+- Tampermonkey browser extension (recommended — setup wizard walks you through it)
 
 Quick install (recommended)
 ---------------------------
 1. Verify the SHA-256 checksum (optional but recommended):
-     Get-FileHash -Algorithm SHA256 "Grok Link 0.4.0.exe"
-   Compare with Grok Link 0.4.0.exe.sha256
+     Get-FileHash -Algorithm SHA256 "Grok Link 0.5.1.exe"
+   Compare with Grok Link 0.5.1.exe.sha256
 
 2. Run the installer:
-     Grok Link_0.4.0_x64-setup.exe
+     Grok Link_0.5.1_x64-setup.exe
    Or use the portable exe directly:
-     "Grok Link 0.4.0.exe"
+     "Grok Link 0.5.1.exe"
 
 3. Launch Grok Link:
    - Desktop shortcut "Grok Link", or
    - Run scripts\Start-GrokLink.ps1 from a full source install
 
-4. Seamless sync (one-time):
-   - In Grok Link, click "Install browser bridge"
-   - Paste the userscript into Tampermonkey (tampermonkey.net)
-   - Enable the script on grok.com
+4. First-time setup (in the app):
+   - Read "What Grok Link does" at the top of the window
+   - Follow the 4-step setup guide (Tampermonkey + helper script)
+   - Click "Finish setup" when done
 
-System tray (v0.4+)
--------------------
+System tray
+-----------
 - Closing the Grok Link window hides it to the system tray; the bridge keeps running.
 - Left-click the tray icon to restore the window.
 - Right-click the tray icon for Show Grok Link or Quit.
 - Only one Grok Link instance runs at a time; launching again focuses the existing one.
+- Grok Link starts automatically when you sign in to Windows.
 
 Verify it works
 ---------------
-- Grok Link window shows: Bridge online at http://127.0.0.1:3877/api/handoff
+- Grok Link shows "Setup complete" or "Ready and waiting"
 - In PowerShell:
     Invoke-RestMethod http://127.0.0.1:3877/api/health
 
@@ -64,3 +65,4 @@ Uninstall
 Support
 -------
 - README.md and docs\GROK-BUILD-INTEGRATION.md in the release or repository
+- https://github.com/SqibNation/grok-link/releases

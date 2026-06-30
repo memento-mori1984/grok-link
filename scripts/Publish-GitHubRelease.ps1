@@ -1,4 +1,4 @@
-# Create GitHub repo (if needed), push, and publish v0.3.0 release with assets.
+# Create GitHub repo (if needed), push, and publish a versioned GitHub release with assets.
 param(
     [string]$Repo = "",
     [string]$Tag = "",

@@ -58,7 +58,9 @@ Full protocol: [docs/GROK-BUILD-INTEGRATION.md](docs/GROK-BUILD-INTEGRATION.md)
 
 Install also adds Grok Link to **Windows Startup** so the bridge is usually ready when you sign in.
 
-Closing the window hides Grok Link to the **system tray** (v0.4+); the bridge keeps running. Left-click the tray icon to restore. Only one instance runs at a time.
+Closing the window hides Grok Link to the **system tray**; the bridge keeps running. Left-click the tray icon to restore. Only one instance runs at a time.
+
+**First launch:** follow the in-app setup guide (plain English) to install Tampermonkey and the browser helper script.
 
 To disable startup later:
 
@@ -92,8 +94,8 @@ Rebuild and package in one step:
 ### Verify a download
 
 ```powershell
-Get-FileHash -Algorithm SHA256 "dist\release\Grok-Link-0.4.0-win64.zip"
-# Compare with dist\release\Grok-Link-0.4.0-win64.zip.sha256
+Get-FileHash -Algorithm SHA256 "dist\release\Grok-Link-0.5.1-win64.zip"
+# Compare with dist\release\Grok-Link-0.5.1-win64.zip.sha256
 ```
 
 ### Security note

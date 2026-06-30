@@ -11,6 +11,10 @@ if (-not $exe) {
 
 $installDir = Join-Path $env:LOCALAPPDATA "Programs\Grok Link"
 New-Item -ItemType Directory -Path $installDir -Force | Out-Null
+Get-ChildItem $installDir -File -Filter "Grok Link *.exe" -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -ne $exe.Name } | Remove-Item -Force
+Get-ChildItem $installDir -File -Filter "Grok Link *.exe.sha256" -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -ne "$($exe.Name).sha256" } | Remove-Item -Force
 Copy-Item $exe.FullName (Join-Path $installDir $exe.Name) -Force
 $browserSrc = Join-Path $root "browser"
 if (Test-Path $browserSrc) {
