@@ -33,10 +33,18 @@ fn ensure_browser_bridge_script() -> Result<PathBuf, String> {
 
 fn show_main_window(app: &AppHandle) {
     if let Some(window) = app.get_webview_window("main") {
+        let _ = window.set_skip_taskbar(false);
         let _ = window.unminimize();
         let _ = window.show();
         let _ = window.set_focus();
     }
+}
+
+fn hide_main_to_tray(window: &tauri::WebviewWindow) -> Result<(), String> {
+    window
+        .set_skip_taskbar(true)
+        .map_err(|e| format!("set_skip_taskbar: {e}"))?;
+    window.hide().map_err(|e| format!("hide: {e}"))
 }
 
 fn setup_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
@@ -49,7 +57,7 @@ fn setup_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
         .ok_or("missing default window icon")?
         .clone();
 
-    let _tray = TrayIconBuilder::new()
+    let tray = TrayIconBuilder::new()
         .icon(icon)
         .tooltip(&format!("Grok Link — bridge on port {BRIDGE_PORT}"))
         .menu(&menu)
@@ -70,6 +78,9 @@ fn setup_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
             }
         })
         .build(app)?;
+
+    // Keep the tray icon alive for the lifetime of the app.
+    app.manage(tray);
 
     Ok(())
 }
@@ -116,11 +127,8 @@ fn data_dir_path() -> String {
 }
 
 #[tauri::command]
-fn hide_to_tray(app: AppHandle) -> Result<(), String> {
-    app.get_webview_window("main")
-        .ok_or("main window not found")?
-        .hide()
-        .map_err(|e| e.to_string())
+fn hide_to_tray(window: tauri::WebviewWindow) -> Result<(), String> {
+    hide_main_to_tray(&window)
 }
 
 #[tauri::command]
@@ -192,7 +200,9 @@ pub fn run() {
         })
         .on_window_event(|window, event| {
             if let WindowEvent::CloseRequested { api, .. } = event {
-                let _ = window.hide();
+                if let Some(webview) = window.app_handle().get_webview_window(window.label()) {
+                    let _ = hide_main_to_tray(&webview);
+                }
                 api.prevent_close();
             }
         })

@@ -450,10 +450,31 @@ async function submitResponse() {
 
 async function hideToTray() {
   try {
+    const getCurrent =
+      window.__TAURI__?.webviewWindow?.getCurrentWebviewWindow ??
+      window.__TAURI__?.window?.getCurrentWindow;
+    if (typeof getCurrent === "function") {
+      const win = getCurrent();
+      if (win?.hide) {
+        if (win.setSkipTaskbar) {
+          await win.setSkipTaskbar(true);
+        }
+        await win.hide();
+        showToast(
+          "Hidden to tray. Click the Grok Link icon near the clock to reopen.",
+          "info"
+        );
+        return;
+      }
+    }
     await tauriInvoke("hide_to_tray");
-    showToast("Grok Link is in the system tray. Click the icon near the clock to reopen.", "info");
+    showToast(
+      "Hidden to tray. Click the Grok Link icon near the clock to reopen.",
+      "info"
+    );
   } catch (e) {
-    setStatus("status", `Could not hide: ${e.message || e}`, true);
+    const msg = e?.message || String(e);
+    showToast(`Could not hide to tray: ${msg}`, "info");
   }
 }
 

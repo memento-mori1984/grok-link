@@ -2,6 +2,12 @@
 
 All notable changes to Grok Link are documented here.
 
+## [0.5.3] - 2026-06-30
+
+### Fixed
+- Hide to tray: keep tray icon alive, set skip-taskbar on Windows, add window permissions
+- Close-to-tray uses the same hide path as the Hide to tray button
+
 ## [0.5.2] - 2026-06-30
 
 ### Changed
