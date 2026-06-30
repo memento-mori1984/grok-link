@@ -21,7 +21,7 @@ while ([DateTime]::UtcNow -lt $deadline) {
     try {
         $item = Get-Handoff -Id $Id -Port $Port
     } catch {
-        Write-Host "Bridge unreachable — restarting Grok Link if needed..." -ForegroundColor Yellow
+        Write-Host "Bridge unreachable - restarting Grok Link if needed..." -ForegroundColor Yellow
         if (-not (Ensure-GrokLinkRunning -Port $Port -WaitSec 30)) {
             Write-Host "Still waiting for bridge..." -ForegroundColor Yellow
         }
