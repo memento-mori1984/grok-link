@@ -2,7 +2,7 @@
 
 **Bridge between Grok Build and SuperGrok.**
 
-Grok Build (the IDE coding agent) sends handoffs to this app. You open SuperGrok in the browser, work there, then paste the reply back so Grok Build can continue integrating functions and updates.
+Grok Build (the IDE coding agent) sends handoffs to this app. You open SuperGrok in the browser; with the browser bridge installed, replies sync back automatically so Grok Build can continue.
 
 Standalone project. Not related to Claim Clash.
 
@@ -28,9 +28,9 @@ Use whatever folder you cloned into (e.g. `C:\dev\grok-link` or `%USERPROFILE%\g
 
 Keep Grok Link running while you use the bridge.
 
-## Seamless bridge (v0.3)
+## Seamless bridge (v0.4+)
 
-1. In Grok Link: **Install browser bridge** (Tampermonkey userscript).
+1. In Grok Link: complete the setup guide — **Install browser bridge** (one-click Tampermonkey install).
 2. From Grok Build:
 
 ```powershell
@@ -61,7 +61,7 @@ Full protocol: [docs/GROK-BUILD-INTEGRATION.md](docs/GROK-BUILD-INTEGRATION.md)
 
 Install also adds Grok Link to **Windows Startup** so the bridge is usually ready when you sign in.
 
-Closing the window hides Grok Link to the **system tray**; the bridge keeps running. Left-click the tray icon to restore. Only one instance runs at a time.
+Closing the window or clicking **minimize** hides Grok Link to the **system tray**; the bridge keeps running. Left-click the tray icon to restore. Only one instance runs at a time.
 
 **First launch:** follow the in-app setup guide (plain English) to install Tampermonkey and the browser helper script.
 
@@ -97,8 +97,8 @@ Rebuild and package in one step:
 ### Verify a download
 
 ```powershell
-Get-FileHash -Algorithm SHA256 "dist\release\Grok-Link-0.5.2-win64.zip"
-# Compare with dist\release\Grok-Link-0.5.2-win64.zip.sha256
+Get-FileHash -Algorithm SHA256 "dist\release\Grok-Link-0.5.7-win64.zip"
+# Compare with dist\release\Grok-Link-0.5.7-win64.zip.sha256
 ```
 
 ### Security note

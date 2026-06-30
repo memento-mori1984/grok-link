@@ -50,6 +50,7 @@ $scriptFiles = @(
     "Start-GrokLink.ps1",
     "Set-Startup.ps1",
     "Install-BrowserBridge.ps1",
+    "Test-GrokLinkBridge.ps1",
     "handoff.ps1",
     "handoff-and-wait.ps1",
     "poll-handoff.ps1",

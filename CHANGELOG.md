@@ -2,6 +2,41 @@
 
 All notable changes to Grok Link are documented here.
 
+## [0.5.7] - 2026-06-30
+
+### Changed
+- Removed non-working **Hide to tray** button (minimize and close already go to tray)
+
+### Fixed
+- Status hero no longer stuck on "Starting…" — inline bridge poll + refresh on tray restore
+- Minimize (−) sends window to tray instead of the taskbar (v0.5.6)
+- Tauri command ACL permissions for bridge/UI invoke (v0.5.6)
+- `poll-handoff.ps1` auto-restarts Grok Link when bridge drops during long waits
+
+## [0.5.6] - 2026-06-30
+
+### Fixed
+- Minimize button hides to tray (not taskbar)
+- Status hero updates via HTTP + Tauri; refreshes when window restored from tray
+- App command permissions (`allow-app-commands`) for reliable invoke
+
+## [0.5.5] - 2026-06-30
+
+### Fixed
+- Hide-to-tray uses Rust `main` window lookup
+- Status hero updates when setup incomplete
+
+## [0.5.4] - 2026-06-30
+
+### Added
+- `Test-GrokLinkBridge.ps1` — synthetic bridge round-trip test
+- `Ensure-GrokLinkRunning` / `Wait-ForGrokLink` in bridge scripts
+- One-click Tampermonkey install via `file://` URL
+- Userscript v0.4.0: `GM_xmlhttpRequest`, faster sync, auto-update on disk
+
+### Changed
+- Browser bridge install flow — no Notepad copy-paste required
+
 ## [0.5.3] - 2026-06-30
 
 ### Fixed
