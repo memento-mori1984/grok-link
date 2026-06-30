@@ -10,8 +10,8 @@ param(
 $ErrorActionPreference = "Stop"
 . "$PSScriptRoot\bridge-common.ps1"
 
-if (-not (Wait-ForGrokLink -Port $Port -TimeoutSec 15)) {
-    Write-Error "Grok Link bridge went offline while waiting. Keep the app running (tray is OK)."
+if (-not (Ensure-GrokLinkRunning -Port $Port)) {
+    Write-Error "Grok Link bridge not available. Launch Grok Link from the desktop shortcut or tray."
 }
 
 $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSec)
@@ -21,9 +21,9 @@ while ([DateTime]::UtcNow -lt $deadline) {
     try {
         $item = Get-Handoff -Id $Id -Port $Port
     } catch {
-        Write-Host "Bridge unreachable, retrying..." -ForegroundColor Yellow
-        if (-not (Wait-ForGrokLink -Port $Port -TimeoutSec 10 -Quiet)) {
-            Write-Error "Grok Link bridge offline."
+        Write-Host "Bridge unreachable — restarting Grok Link if needed..." -ForegroundColor Yellow
+        if (-not (Ensure-GrokLinkRunning -Port $Port -WaitSec 30)) {
+            Write-Host "Still waiting for bridge..." -ForegroundColor Yellow
         }
         Start-Sleep -Seconds $IntervalSec
         continue
