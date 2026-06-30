@@ -10,6 +10,22 @@ $ErrorActionPreference = "Stop"
 $root = Split-Path $PSScriptRoot -Parent
 Set-Location $root
 
+function Invoke-Git {
+    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Args)
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    $out = & git @Args 2>&1
+    $code = $LASTEXITCODE
+    $ErrorActionPreference = $prev
+    return @{ Output = $out; ExitCode = $code }
+}
+
+function Get-OriginRemoteUrl {
+    $r = Invoke-Git remote get-url origin
+    if ($r.ExitCode -eq 0) { return [string]$r.Output }
+    return $null
+}
+
 $gh = Get-Command gh -ErrorAction SilentlyContinue
 if (-not $gh) {
     $ghPath = "$env:ProgramFiles\GitHub CLI\gh.exe"
@@ -41,7 +57,7 @@ if (-not (Test-Path $zip)) { Write-Error "Missing release zip: $zip" }
 if (-not (Test-Path $notes)) { Write-Error "Missing release notes: $notes" }
 
 if (-not $Repo) {
-    $remote = git remote get-url origin 2>$null
+    $remote = Get-OriginRemoteUrl
     if ($remote -match 'github\.com[:/](.+?)(?:\.git)?$') {
         $Repo = $Matches[1]
     }
@@ -51,29 +67,41 @@ if (-not $Repo) {
     if (-not $user) { Write-Error "Could not detect GitHub user. Pass -Repo owner/grok-link" }
     $Repo = "$user/grok-link"
     Write-Host "Using repo: $Repo" -ForegroundColor Cyan
-    $exists = & $gh repo view $Repo 2>$null
-    if ($LASTEXITCODE -ne 0) {
-        $createArgs = @("repo", "create", $Repo, "--source=.", "--remote=origin", "--push")
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    & $gh repo view $Repo 2>$null | Out-Null
+    $repoExists = ($LASTEXITCODE -eq 0)
+    $ErrorActionPreference = $prev
+    if (-not $repoExists) {
+        $createArgs = @(
+            "repo", "create", $Repo,
+            "--description=Bridge between Grok Build and SuperGrok",
+            "--source=.", "--remote=origin", "--push"
+        )
         if ($Private) { $createArgs += "--private" } else { $createArgs += "--public" }
         & $gh @createArgs
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     } else {
-        git remote get-url origin 2>$null
-        if ($LASTEXITCODE -ne 0) {
-            git remote add origin "https://github.com/$Repo.git"
+        if (-not (Get-OriginRemoteUrl)) {
+            Invoke-Git remote add origin "https://github.com/$Repo.git" | Out-Null
         }
-        git push -u origin master
+        $push = Invoke-Git push -u origin master
+        if ($push.ExitCode -ne 0) { exit $push.ExitCode }
     }
 } else {
-    git remote get-url origin 2>$null
-    if ($LASTEXITCODE -ne 0) {
-        git remote add origin "https://github.com/$Repo.git"
+    if (-not (Get-OriginRemoteUrl)) {
+        Invoke-Git remote add origin "https://github.com/$Repo.git" | Out-Null
     }
-    git push -u origin master
+    $push = Invoke-Git push -u origin master
+    if ($push.ExitCode -ne 0) { exit $push.ExitCode }
 }
 
-$releaseExists = & $gh release view $tagName --repo $Repo 2>$null
-if ($LASTEXITCODE -eq 0) {
+$prev = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+& $gh release view $tagName --repo $Repo 2>$null | Out-Null
+$releaseExists = ($LASTEXITCODE -eq 0)
+$ErrorActionPreference = $prev
+if ($releaseExists) {
     Write-Host "Release $tagName exists; uploading assets..." -ForegroundColor Yellow
     & $gh release upload $tagName $zip $zipSha --repo $Repo --clobber
 } else {
