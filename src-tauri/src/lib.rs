@@ -1,9 +1,31 @@
 mod bridge;
 
 use bridge::{managed_state, BridgeState, Handoff, BRIDGE_PORT};
+use std::fs;
+use std::path::PathBuf;
+use std::process::Command;
 use std::sync::Arc;
 use tauri::{AppHandle, Emitter, Manager};
 use tauri_plugin_opener::OpenerExt;
+
+const BROWSER_BRIDGE_SCRIPT: &str = include_str!("../../browser/grok-link-bridge.user.js");
+
+fn browser_bridge_path() -> PathBuf {
+    bridge::bridge_data_dir()
+        .join("browser")
+        .join("grok-link-bridge.user.js")
+}
+
+fn ensure_browser_bridge_script() -> Result<PathBuf, String> {
+    let path = browser_bridge_path();
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+    if !path.exists() {
+        fs::write(&path, BROWSER_BRIDGE_SCRIPT).map_err(|e| e.to_string())?;
+    }
+    Ok(path)
+}
 
 #[tauri::command]
 fn open_in_browser(app: tauri::AppHandle, url: String) -> Result<(), String> {
@@ -65,12 +87,26 @@ fn refresh_inbox(app: AppHandle) -> Result<Vec<Handoff>, String> {
     Ok(state.list())
 }
 
+#[tauri::command]
+fn install_browser_bridge(app: AppHandle) -> Result<String, String> {
+    let path = ensure_browser_bridge_script()?;
+    app.opener()
+        .open_url("https://www.tampermonkey.net/", None::<&str>)
+        .map_err(|e| e.to_string())?;
+    Command::new("notepad.exe")
+        .arg(&path)
+        .spawn()
+        .map_err(|e| e.to_string())?;
+    Ok(path.to_string_lossy().into_owned())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             let data_dir = bridge::bridge_data_dir();
+            let _ = ensure_browser_bridge_script();
             let bridge = Arc::new(BridgeState::new(data_dir));
             app.manage(bridge.clone());
             start_bridge_server(app.handle().clone(), bridge);
@@ -84,7 +120,8 @@ pub fn run() {
             list_handoffs,
             mark_handoff_sent,
             submit_handoff_response,
-            refresh_inbox
+            refresh_inbox,
+            install_browser_bridge
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

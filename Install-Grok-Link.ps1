@@ -12,6 +12,10 @@ if (-not $exe) {
 $installDir = Join-Path $env:LOCALAPPDATA "Programs\Grok Link"
 New-Item -ItemType Directory -Path $installDir -Force | Out-Null
 Copy-Item $exe.FullName (Join-Path $installDir $exe.Name) -Force
+$browserSrc = Join-Path $root "browser"
+if (Test-Path $browserSrc) {
+    Copy-Item $browserSrc (Join-Path $installDir "browser") -Recurse -Force
+}
 $sha = "$($exe.FullName).sha256"
 if (Test-Path $sha) {
     Copy-Item $sha (Join-Path $installDir "$($exe.Name).sha256") -Force

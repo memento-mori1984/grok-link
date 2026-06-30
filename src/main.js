@@ -1,4 +1,4 @@
-const APP_VERSION = "0.2.1";
+const APP_VERSION = "0.3.0";
 const STORAGE_KEY = "grok-link-settings";
 
 let activeHandoffId = null;
@@ -57,12 +57,15 @@ function getSelectedHost() {
   return checked?.value === "xai" ? "xai" : "com";
 }
 
-function buildSuperGrokUrl(text) {
+function buildSuperGrokUrl(text, handoffId = activeHandoffId) {
   const encoded = encodeURIComponent(text);
-  if (getSelectedHost() === "xai") {
-    return `https://grok.x.ai/?q=${encoded}`;
+  const base =
+    getSelectedHost() === "xai" ? "https://grok.x.ai/" : "https://grok.com/";
+  let url = `${base}?q=${encoded}`;
+  if (handoffId) {
+    url += `#grok-link-id=${handoffId}`;
   }
-  return `https://grok.com/?q=${encoded}`;
+  return url;
 }
 
 function formatHandoffMeta(item) {
@@ -199,11 +202,14 @@ async function openSuperGrok() {
       await refreshQueue();
     }
     const host = getSelectedHost() === "xai" ? "grok.x.ai" : "grok.com";
+    const linkNote = activeHandoffId
+      ? " Browser bridge will auto-sync the reply."
+      : "";
     setStatus(
       "status",
-      copied
+      (copied
         ? `Opened ${host} with ?q= prefill. Clipboard backup copied.`
-        : `Opened ${host} with ?q= prefill.`
+        : `Opened ${host} with ?q= prefill.`) + linkNote
     );
   } catch (e) {
     setStatus("status", `Could not open browser: ${e.message || e}`, true);
@@ -247,6 +253,22 @@ function bindOptionsPersistence() {
   });
 }
 
+async function installBrowserBridge() {
+  try {
+    const path = await tauriInvoke("install_browser_bridge");
+    setStatus(
+      "bridge-install-status",
+      `Opened Tampermonkey + userscript. Copy into Tampermonkey, save, enable on grok.com. File: ${path}`
+    );
+  } catch (e) {
+    setStatus(
+      "bridge-install-status",
+      `Install failed: ${e.message || e}. Or run .\\scripts\\Install-BrowserBridge.ps1`,
+      true
+    );
+  }
+}
+
 async function initBridgeMeta() {
   try {
     const port = await tauriInvoke("bridge_port");
@@ -275,6 +297,7 @@ async function init() {
   });
   document.getElementById("refresh-queue-btn")?.addEventListener("click", () => void refreshQueue());
   document.getElementById("submit-response-btn")?.addEventListener("click", () => void submitResponse());
+  document.getElementById("install-bridge-btn")?.addEventListener("click", () => void installBrowserBridge());
 
   document.getElementById("prompt")?.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {

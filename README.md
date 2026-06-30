@@ -25,7 +25,18 @@ npm run tauri dev
 
 Keep Grok Link running while you use the bridge.
 
-## Send from Grok Build
+## Seamless bridge (v0.3)
+
+1. In Grok Link: **Install browser bridge** (Tampermonkey userscript).
+2. From Grok Build:
+
+```powershell
+.\scripts\handoff-and-wait.ps1 -Message "Your question" -Task "label" -Context "project context"
+```
+
+SuperGrok opens, replies auto-sync back to Grok Build.
+
+## Send from Grok Build (manual)
 
 ```powershell
 .\scripts\handoff.ps1 -Message "Your question" -Task "short-label" -Context "extra context"
