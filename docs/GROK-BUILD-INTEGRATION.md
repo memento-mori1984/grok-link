@@ -2,6 +2,16 @@
 
 Grok Link is the local bridge between **Grok Build** (IDE agent) and **SuperGrok** (browser).
 
+## Paths
+
+Examples below use a placeholder repo root. Set it to **your** clone location:
+
+```powershell
+$GrokLink = "C:\path\to\grok-link"   # e.g. C:\dev\grok-link or $env:USERPROFILE\grok-link
+```
+
+If your shell is already in the repo, you can use relative paths like `.\scripts\handoff.ps1` instead.
+
 ## Seamless flow (v0.3+)
 
 1. **One-time:** Install the **browser bridge** (Tampermonkey userscript).
@@ -23,7 +33,7 @@ In Grok Link app: **Install browser bridge** (opens Tampermonkey + userscript fi
 Or:
 
 ```powershell
-cd C:\Users\Ranzh\grok-link
+cd $GrokLink
 .\scripts\Install-BrowserBridge.ps1
 ```
 
@@ -32,7 +42,7 @@ Copy the script into Tampermonkey, save, and ensure it runs on `grok.com`.
 ## Grok Build: send and wait (recommended)
 
 ```powershell
-& "C:\Users\Ranzh\grok-link\scripts\handoff-and-wait.ps1" `
+& "$GrokLink\scripts\handoff-and-wait.ps1" `
   -Message "Your question for SuperGrok" `
   -Task "short-label" `
   -Context "Project paths, constraints, code summary"
@@ -43,20 +53,20 @@ This creates the handoff, opens SuperGrok, and blocks until the reply is synced 
 ## Grok Build: send only
 
 ```powershell
-& "C:\Users\Ranzh\grok-link\scripts\handoff.ps1" `
+& "$GrokLink\scripts\handoff.ps1" `
   -Message "Your question" -Task "short-label" -Context "extra context"
 ```
 
 Then open SuperGrok:
 
 ```powershell
-& "C:\Users\Ranzh\grok-link\scripts\open-supergrok.ps1" -Id "{handoff-id}"
+& "$GrokLink\scripts\open-supergrok.ps1" -Id "{handoff-id}"
 ```
 
 Poll until answered:
 
 ```powershell
-& "C:\Users\Ranzh\grok-link\scripts\poll-handoff.ps1" -Id "{handoff-id}"
+& "$GrokLink\scripts\poll-handoff.ps1" -Id "{handoff-id}"
 ```
 
 ## Manual fallback

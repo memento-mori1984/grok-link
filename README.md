@@ -18,10 +18,13 @@ Grok Build  --POST /api/handoff-->  Grok Link  --browser-->  SuperGrok
 ## Quick start
 
 ```powershell
-cd C:\Users\Ranzh\grok-link
+git clone https://github.com/SqibNation/grok-link.git
+cd grok-link
 npm install
 npm run tauri dev
 ```
+
+Use whatever folder you cloned into (e.g. `C:\dev\grok-link` or `%USERPROFILE%\grok-link`).
 
 Keep Grok Link running while you use the bridge.
 
@@ -111,7 +114,3 @@ Executables are **not code-signed**. Windows may show SmartScreen warnings for u
 ## License
 
 MIT — see [LICENSE](LICENSE). Copyright (c) 2026 Zachary H. Roberts.
-
-## Project root
-
-`C:\Users\Ranzh\grok-link`
