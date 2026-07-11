@@ -1,9 +1,9 @@
 {
   "name": "grok-link",
   "private": true,
-  "version": "0.5.8",
+  "version": "0.6.15",
   "description": "Grok Link - bridge between Grok Build and SuperGrok",
-  "author": "Zachary H. Roberts",
+  "author": "Arcana Veritas LLC",
   "license": "MIT",
   "type": "module",
   "scripts": {

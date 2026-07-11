@@ -113,4 +113,4 @@ Executables are **not code-signed**. Windows may show SmartScreen warnings for u
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Copyright (c) 2026 Zachary H. Roberts.
+MIT — see [LICENSE](LICENSE). Copyright (c) 2026 Arcana Veritas LLC.

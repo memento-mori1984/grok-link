@@ -7,7 +7,7 @@ CANDIDATE: Zachary H. Roberts
 GitHub: memento-mori1984
 Resume file: C:\Users\Ranzh\OneDrive\WORK\CBPRobertsresume.pdf
 License: MIT
-Copyright: 2026 Zachary H. Roberts
+Copyright (software products): 2026 Arcana Veritas LLC; Candidate: Zachary H. Roberts
 
 PROJECT: Grok Link
 GitHub: https://github.com/memento-mori1984/grok-link
